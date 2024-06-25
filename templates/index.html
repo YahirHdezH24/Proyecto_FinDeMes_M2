@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Modelo de Predicción de Consumo de Combustible</title>
+    <script>
+        function predecirConsumo(event) {
+            event.preventDefault();
+            const engineSize = document.getElementById('engine_size').value;
+            const cylinders = document.getElementById('cylinders').value;
+            const fuelType = document.getElementById('fuel_type').value;
+            const fuelConsumptionComb = document.getElementById('fuel_consumption_comb').value;
+
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `ENGINESIZE=${engineSize}&CYLINDERS=${cylinders}&FUELTYPE=${fuelType}&FUELCONSUMPTION_COMB=${fuelConsumptionComb}`,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('resultado').innerText = 'Error: ' + data.error;
+                } else {
+                    document.getElementById('resultado').innerText = 'La predicción del consumo de combustible es: ' + data.prediction.toFixed(2);
+                }
+            })
+            .catch(error => {
+                document.getElementById('resultado').innerText = 'Error en la solicitud.';
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Modelo de Predicción de Consumo de Combustible</h1>
+    <form id="formulario" onsubmit="predecirConsumo(event)">
+        <label for="engine_size">Tamaño del Motor:</label>
+        <input type="text" id="engine_size" name="ENGINESIZE"><br><br>
+        <label for="cylinders">Cilindros:</label>
+        <input type="text" id="cylinders" name="CYLINDERS"><br><br>
+        <label for="fuel_type">Tipo de Combustible:</label>
+        <input type="text" id="fuel_type" name="FUELTYPE"><br><br>
+        <label for="fuel_consumption_comb">Consumo de Combustible Combinado:</label>
+        <input type="text" id="fuel_consumption_comb" name="FUELCONSUMPTION_COMB"><br><br>
+        <input type="submit" value="Enviar">
+    </form>
+    
+    <p id="resultado"></p>
+</body>
+</html>
